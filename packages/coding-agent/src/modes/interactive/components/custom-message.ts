@@ -3,6 +3,7 @@ import type { Component } from "@mariozechner/pi-tui";
 import { Box, Container, Markdown, type MarkdownTheme, Spacer, Text } from "@mariozechner/pi-tui";
 import type { MessageRenderer } from "../../../core/extensions/types.js";
 import type { CustomMessage } from "../../../core/messages.js";
+import { getOutputPaddingX } from "../theme/layout.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 
 /**
@@ -30,7 +31,7 @@ export class CustomMessageComponent extends Container {
 		this.addChild(new Spacer(1));
 
 		// Create box with purple background (used for default rendering)
-		this.box = new Box(1, 1, (t) => theme.bg("customMessageBg", t));
+		this.box = new Box(getOutputPaddingX(), 1, (t) => theme.bg("customMessageBg", t));
 
 		this.rebuild();
 	}

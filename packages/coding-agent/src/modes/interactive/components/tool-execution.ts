@@ -18,6 +18,7 @@ import { allTools } from "../../../core/tools/index.js";
 import { DEFAULT_MAX_BYTES, DEFAULT_MAX_LINES, formatSize } from "../../../core/tools/truncate.js";
 import { convertToPng } from "../../../utils/image-convert.js";
 import { sanitizeBinaryOutput } from "../../../utils/shell.js";
+import { getOutputPaddingX } from "../theme/layout.js";
 import { getLanguageFromPath, highlightCode, theme } from "../theme/theme.js";
 import { renderDiff } from "./diff.js";
 import { keyHint } from "./keybinding-hints.js";
@@ -94,8 +95,8 @@ export class ToolExecutionComponent extends Container {
 		this.addChild(new Spacer(1));
 
 		// Always create both - contentBox for custom tools/bash, contentText for other built-ins
-		this.contentBox = new Box(1, 1, (text: string) => theme.bg("toolPendingBg", text));
-		this.contentText = new Text("", 1, 1, (text: string) => theme.bg("toolPendingBg", text));
+		this.contentBox = new Box(getOutputPaddingX(), 1, (text: string) => theme.bg("toolPendingBg", text));
+		this.contentText = new Text("", getOutputPaddingX(), 1, (text: string) => theme.bg("toolPendingBg", text));
 
 		// Use contentBox for bash (visual truncation) or custom tools with custom renderers
 		// Use contentText for built-in tools (including overrides without custom renderers)

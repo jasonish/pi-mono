@@ -1,5 +1,6 @@
 import type { AssistantMessage } from "@mariozechner/pi-ai";
 import { Container, Markdown, type MarkdownTheme, Spacer, Text } from "@mariozechner/pi-tui";
+import { getOutputPaddingX } from "../theme/layout.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 
 /**
@@ -61,21 +62,25 @@ export class AssistantMessageComponent extends Container {
 			if (content.type === "text" && content.text.trim()) {
 				// Assistant text messages with no background - trim the text
 				// Set paddingY=0 to avoid extra spacing before tool executions
-				this.contentContainer.addChild(new Markdown(content.text.trim(), 1, 0, this.markdownTheme));
+				this.contentContainer.addChild(
+					new Markdown(content.text.trim(), getOutputPaddingX(), 0, this.markdownTheme),
+				);
 			} else if (content.type === "thinking" && content.thinking.trim()) {
 				// Check if there's text content after this thinking block
 				const hasTextAfter = message.content.slice(i + 1).some((c) => c.type === "text" && c.text.trim());
 
 				if (this.hideThinkingBlock) {
 					// Show static "Thinking..." label when hidden
-					this.contentContainer.addChild(new Text(theme.italic(theme.fg("thinkingText", "Thinking...")), 1, 0));
+					this.contentContainer.addChild(
+						new Text(theme.italic(theme.fg("thinkingText", "Thinking...")), getOutputPaddingX(), 0),
+					);
 					if (hasTextAfter) {
 						this.contentContainer.addChild(new Spacer(1));
 					}
 				} else {
 					// Thinking traces in thinkingText color, italic
 					this.contentContainer.addChild(
-						new Markdown(content.thinking.trim(), 1, 0, this.markdownTheme, {
+						new Markdown(content.thinking.trim(), getOutputPaddingX(), 0, this.markdownTheme, {
 							color: (text: string) => theme.fg("thinkingText", text),
 							italic: true,
 						}),
@@ -99,11 +104,11 @@ export class AssistantMessageComponent extends Container {
 				} else {
 					this.contentContainer.addChild(new Spacer(1));
 				}
-				this.contentContainer.addChild(new Text(theme.fg("error", abortMessage), 1, 0));
+				this.contentContainer.addChild(new Text(theme.fg("error", abortMessage), getOutputPaddingX(), 0));
 			} else if (message.stopReason === "error") {
 				const errorMsg = message.errorMessage || "Unknown error";
 				this.contentContainer.addChild(new Spacer(1));
-				this.contentContainer.addChild(new Text(theme.fg("error", `Error: ${errorMsg}`), 1, 0));
+				this.contentContainer.addChild(new Text(theme.fg("error", `Error: ${errorMsg}`), getOutputPaddingX(), 0));
 			}
 		}
 	}

@@ -98,6 +98,7 @@ import { ToolExecutionComponent } from "./components/tool-execution.js";
 import { TreeSelectorComponent } from "./components/tree-selector.js";
 import { UserMessageComponent } from "./components/user-message.js";
 import { UserMessageSelectorComponent } from "./components/user-message-selector.js";
+import { getOutputPaddingX, initLayout } from "./theme/layout.js";
 import {
 	getAvailableThemes,
 	getAvailableThemesWithPaths,
@@ -285,6 +286,9 @@ export class InteractiveMode {
 		// Register themes from resource loader and initialize
 		setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
 		initTheme(this.settingsManager.getTheme(), true);
+
+		// Initialize layout config
+		initLayout(this.settingsManager.getOutputPaddingX());
 	}
 
 	private setupAutocomplete(fdPath: string | undefined): void {
@@ -407,7 +411,7 @@ export class InteractiveMode {
 				hint("pasteImage", "to paste image"),
 				rawKeyHint("drop files", "to attach"),
 			].join("\n");
-			this.builtInHeader = new Text(`${logo}\n${instructions}`, 1, 0);
+			this.builtInHeader = new Text(`${logo}\n${instructions}`, getOutputPaddingX(), 0);
 
 			// Setup UI layout
 			this.headerContainer.addChild(new Spacer(1));
@@ -421,12 +425,19 @@ export class InteractiveMode {
 					const versionMatch = this.changelogMarkdown.match(/##\s+\[?(\d+\.\d+\.\d+)\]?/);
 					const latestVersion = versionMatch ? versionMatch[1] : this.version;
 					const condensedText = `Updated to v${latestVersion}. Use ${theme.bold("/changelog")} to view full changelog.`;
-					this.headerContainer.addChild(new Text(condensedText, 1, 0));
+					this.headerContainer.addChild(new Text(condensedText, getOutputPaddingX(), 0));
 				} else {
-					this.headerContainer.addChild(new Text(theme.bold(theme.fg("accent", "What's New")), 1, 0));
+					this.headerContainer.addChild(
+						new Text(theme.bold(theme.fg("accent", "What's New")), getOutputPaddingX(), 0),
+					);
 					this.headerContainer.addChild(new Spacer(1));
 					this.headerContainer.addChild(
-						new Markdown(this.changelogMarkdown.trim(), 1, 0, this.getMarkdownThemeWithSettings()),
+						new Markdown(
+							this.changelogMarkdown.trim(),
+							getOutputPaddingX(),
+							0,
+							this.getMarkdownThemeWithSettings(),
+						),
 					);
 					this.headerContainer.addChild(new Spacer(1));
 				}
@@ -442,7 +453,7 @@ export class InteractiveMode {
 				const versionMatch = this.changelogMarkdown.match(/##\s+\[?(\d+\.\d+\.\d+)\]?/);
 				const latestVersion = versionMatch ? versionMatch[1] : this.version;
 				const condensedText = `Updated to v${latestVersion}. Use ${theme.bold("/changelog")} to view full changelog.`;
-				this.headerContainer.addChild(new Text(condensedText, 1, 0));
+				this.headerContainer.addChild(new Text(condensedText, getOutputPaddingX(), 0));
 			}
 		}
 
@@ -1174,10 +1185,10 @@ export class InteractiveMode {
 			// Wrap string array in a Container with Text components
 			const container = new Container();
 			for (const line of content.slice(0, InteractiveMode.MAX_WIDGET_LINES)) {
-				container.addChild(new Text(line, 1, 0));
+				container.addChild(new Text(line, getOutputPaddingX(), 0));
 			}
 			if (content.length > InteractiveMode.MAX_WIDGET_LINES) {
-				container.addChild(new Text(theme.fg("muted", "... (widget truncated)"), 1, 0));
+				container.addChild(new Text(theme.fg("muted", "... (widget truncated)"), getOutputPaddingX(), 0));
 			}
 			component = container;
 		} else {
@@ -1709,7 +1720,7 @@ export class InteractiveMode {
 	 */
 	private showExtensionError(extensionPath: string, error: string, stack?: string): void {
 		const errorMsg = `Extension "${extensionPath}" error: ${error}`;
-		const errorText = new Text(theme.fg("error", errorMsg), 1, 0);
+		const errorText = new Text(theme.fg("error", errorMsg), getOutputPaddingX(), 0);
 		this.chatContainer.addChild(errorText);
 		if (stack) {
 			// Show stack trace in dim color, indented
@@ -1719,7 +1730,7 @@ export class InteractiveMode {
 				.map((line) => theme.fg("dim", `  ${line.trim()}`))
 				.join("\n");
 			if (stackLines) {
-				this.chatContainer.addChild(new Text(stackLines, 1, 0));
+				this.chatContainer.addChild(new Text(stackLines, getOutputPaddingX(), 0));
 			}
 		}
 		this.ui.requestRender();
@@ -2229,7 +2240,7 @@ export class InteractiveMode {
 				} else if (event.errorMessage) {
 					// Compaction failed (e.g., quota exceeded, API error)
 					this.chatContainer.addChild(new Spacer(1));
-					this.chatContainer.addChild(new Text(theme.fg("error", event.errorMessage), 1, 0));
+					this.chatContainer.addChild(new Text(theme.fg("error", event.errorMessage), getOutputPaddingX(), 0));
 				}
 				void this.flushCompactionQueue({ willRetry: event.willRetry });
 				this.ui.requestRender();
@@ -2306,7 +2317,7 @@ export class InteractiveMode {
 		}
 
 		const spacer = new Spacer(1);
-		const text = new Text(theme.fg("dim", message), 1, 0);
+		const text = new Text(theme.fg("dim", message), getOutputPaddingX(), 0);
 		this.chatContainer.addChild(spacer);
 		this.chatContainer.addChild(text);
 		this.lastStatusSpacer = spacer;
@@ -2743,13 +2754,13 @@ export class InteractiveMode {
 
 	showError(errorMessage: string): void {
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(theme.fg("error", `Error: ${errorMessage}`), 1, 0));
+		this.chatContainer.addChild(new Text(theme.fg("error", `Error: ${errorMessage}`), getOutputPaddingX(), 0));
 		this.ui.requestRender();
 	}
 
 	showWarning(warningMessage: string): void {
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(theme.fg("warning", `Warning: ${warningMessage}`), 1, 0));
+		this.chatContainer.addChild(new Text(theme.fg("warning", `Warning: ${warningMessage}`), getOutputPaddingX(), 0));
 		this.ui.requestRender();
 	}
 
@@ -2818,15 +2829,15 @@ export class InteractiveMode {
 			this.pendingMessagesContainer.addChild(new Spacer(1));
 			for (const message of steeringMessages) {
 				const text = theme.fg("dim", `Steering: ${message}`);
-				this.pendingMessagesContainer.addChild(new TruncatedText(text, 1, 0));
+				this.pendingMessagesContainer.addChild(new TruncatedText(text, getOutputPaddingX(), 0));
 			}
 			for (const message of followUpMessages) {
 				const text = theme.fg("dim", `Follow-up: ${message}`);
-				this.pendingMessagesContainer.addChild(new TruncatedText(text, 1, 0));
+				this.pendingMessagesContainer.addChild(new TruncatedText(text, getOutputPaddingX(), 0));
 			}
 			const dequeueHint = this.getAppKeyDisplay("dequeue");
 			const hintText = theme.fg("dim", `↳ ${dequeueHint} to edit all queued messages`);
-			this.pendingMessagesContainer.addChild(new TruncatedText(hintText, 1, 0));
+			this.pendingMessagesContainer.addChild(new TruncatedText(hintText, getOutputPaddingX(), 0));
 		}
 	}
 
@@ -2997,6 +3008,7 @@ export class InteractiveMode {
 					doubleEscapeAction: this.settingsManager.getDoubleEscapeAction(),
 					showHardwareCursor: this.settingsManager.getShowHardwareCursor(),
 					editorPaddingX: this.settingsManager.getEditorPaddingX(),
+					outputPaddingX: this.settingsManager.getOutputPaddingX(),
 					autocompleteMaxVisible: this.settingsManager.getAutocompleteMaxVisible(),
 					quietStartup: this.settingsManager.getQuietStartup(),
 					clearOnShrink: this.settingsManager.getClearOnShrink(),
@@ -3080,6 +3092,10 @@ export class InteractiveMode {
 						if (this.editor !== this.defaultEditor && this.editor.setPaddingX !== undefined) {
 							this.editor.setPaddingX(padding);
 						}
+					},
+					onOutputPaddingXChange: (padding) => {
+						this.settingsManager.setOutputPaddingX(padding);
+						this.showStatus("Output padding updated (restart required)");
 					},
 					onAutocompleteMaxVisibleChange: (maxVisible) => {
 						this.settingsManager.setAutocompleteMaxVisible(maxVisible);
@@ -3872,7 +3888,9 @@ export class InteractiveMode {
 			const currentName = this.sessionManager.getSessionName();
 			if (currentName) {
 				this.chatContainer.addChild(new Spacer(1));
-				this.chatContainer.addChild(new Text(theme.fg("dim", `Session name: ${currentName}`), 1, 0));
+				this.chatContainer.addChild(
+					new Text(theme.fg("dim", `Session name: ${currentName}`), getOutputPaddingX(), 0),
+				);
 			} else {
 				this.showWarning("Usage: /name <name>");
 			}
@@ -3883,7 +3901,7 @@ export class InteractiveMode {
 		this.sessionManager.appendSessionInfo(name);
 		this.updateTerminalTitle();
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(theme.fg("dim", `Session name set: ${name}`), 1, 0));
+		this.chatContainer.addChild(new Text(theme.fg("dim", `Session name set: ${name}`), getOutputPaddingX(), 0));
 		this.ui.requestRender();
 	}
 
@@ -3920,7 +3938,7 @@ export class InteractiveMode {
 		}
 
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(info, 1, 0));
+		this.chatContainer.addChild(new Text(info, getOutputPaddingX(), 0));
 		this.ui.requestRender();
 	}
 
@@ -3938,9 +3956,11 @@ export class InteractiveMode {
 
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
-		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "What's New")), 1, 0));
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "What's New")), getOutputPaddingX(), 0));
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Markdown(changelogMarkdown, 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(
+			new Markdown(changelogMarkdown, getOutputPaddingX(), 1, this.getMarkdownThemeWithSettings()),
+		);
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}
@@ -4078,9 +4098,13 @@ export class InteractiveMode {
 
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
-		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Keyboard Shortcuts")), 1, 0));
+		this.chatContainer.addChild(
+			new Text(theme.bold(theme.fg("accent", "Keyboard Shortcuts")), getOutputPaddingX(), 0),
+		);
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Markdown(hotkeys.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(
+			new Markdown(hotkeys.trim(), getOutputPaddingX(), 1, this.getMarkdownThemeWithSettings()),
+		);
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}
@@ -4105,7 +4129,7 @@ export class InteractiveMode {
 		this.pendingTools.clear();
 
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(`${theme.fg("accent", "✓ New session started")}`, 1, 1));
+		this.chatContainer.addChild(new Text(`${theme.fg("accent", "✓ New session started")}`, getOutputPaddingX(), 1));
 		this.ui.requestRender();
 	}
 
@@ -4137,7 +4161,11 @@ export class InteractiveMode {
 
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(
-			new Text(`${theme.fg("accent", "✓ Debug log written")}\n${theme.fg("muted", debugLogPath)}`, 1, 1),
+			new Text(
+				`${theme.fg("accent", "✓ Debug log written")}\n${theme.fg("muted", debugLogPath)}`,
+				getOutputPaddingX(),
+				1,
+			),
 		);
 		this.ui.requestRender();
 	}
