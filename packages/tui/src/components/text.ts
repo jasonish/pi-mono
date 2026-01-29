@@ -36,6 +36,15 @@ export class Text implements Component {
 		this.cachedLines = undefined;
 	}
 
+	setPaddingX(paddingX: number): void {
+		if (this.paddingX !== paddingX) {
+			this.paddingX = paddingX;
+			this.cachedText = undefined;
+			this.cachedWidth = undefined;
+			this.cachedLines = undefined;
+		}
+	}
+
 	invalidate(): void {
 		this.cachedText = undefined;
 		this.cachedWidth = undefined;

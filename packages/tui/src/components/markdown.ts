@@ -77,6 +77,13 @@ export class Markdown implements Component {
 		this.invalidate();
 	}
 
+	setPaddingX(paddingX: number): void {
+		if (this.paddingX !== paddingX) {
+			this.paddingX = paddingX;
+			this.invalidate();
+		}
+	}
+
 	invalidate(): void {
 		this.cachedText = undefined;
 		this.cachedWidth = undefined;

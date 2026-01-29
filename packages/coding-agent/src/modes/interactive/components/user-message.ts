@@ -1,18 +1,25 @@
 import { Container, Markdown, type MarkdownTheme, Spacer } from "@mariozechner/pi-tui";
+import { getOutputPaddingX } from "../theme/layout.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 
 /**
  * Component that renders a user message
  */
 export class UserMessageComponent extends Container {
+	private markdown: Markdown;
+
 	constructor(text: string, markdownTheme: MarkdownTheme = getMarkdownTheme()) {
 		super();
 		this.addChild(new Spacer(1));
-		this.addChild(
-			new Markdown(text, 1, 1, markdownTheme, {
-				bgColor: (text: string) => theme.bg("userMessageBg", text),
-				color: (text: string) => theme.fg("userMessageText", text),
-			}),
-		);
+		this.markdown = new Markdown(text, getOutputPaddingX(), 1, markdownTheme, {
+			bgColor: (text: string) => theme.bg("userMessageBg", text),
+			color: (text: string) => theme.fg("userMessageText", text),
+		});
+		this.addChild(this.markdown);
+	}
+
+	override invalidate(): void {
+		super.invalidate();
+		this.markdown.setPaddingX(getOutputPaddingX());
 	}
 }

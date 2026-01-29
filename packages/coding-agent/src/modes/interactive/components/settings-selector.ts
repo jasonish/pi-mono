@@ -38,6 +38,7 @@ export interface SettingsConfig {
 	doubleEscapeAction: "fork" | "tree";
 	showHardwareCursor: boolean;
 	editorPaddingX: number;
+	outputPaddingX: number;
 	autocompleteMaxVisible: number;
 	quietStartup: boolean;
 }
@@ -58,6 +59,7 @@ export interface SettingsCallbacks {
 	onDoubleEscapeActionChange: (action: "fork" | "tree") => void;
 	onShowHardwareCursorChange: (enabled: boolean) => void;
 	onEditorPaddingXChange: (padding: number) => void;
+	onOutputPaddingXChange: (padding: number) => void;
 	onAutocompleteMaxVisibleChange: (maxVisible: number) => void;
 	onQuietStartupChange: (enabled: boolean) => void;
 	onCancel: () => void;
@@ -302,9 +304,19 @@ export class SettingsSelectorComponent extends Container {
 			values: ["0", "1", "2", "3"],
 		});
 
-		// Autocomplete max visible toggle (insert after editor-padding)
+		// Output padding toggle (insert after editor-padding)
 		const editorPaddingIndex = items.findIndex((item) => item.id === "editor-padding");
 		items.splice(editorPaddingIndex + 1, 0, {
+			id: "output-padding",
+			label: "Output padding",
+			description: "Horizontal padding for output content (0-3)",
+			currentValue: String(config.outputPaddingX),
+			values: ["0", "1", "2", "3"],
+		});
+
+		// Autocomplete max visible toggle (insert after output-padding)
+		const outputPaddingIndex = items.findIndex((item) => item.id === "output-padding");
+		items.splice(outputPaddingIndex + 1, 0, {
 			id: "autocomplete-max-visible",
 			label: "Autocomplete max items",
 			description: "Max visible items in autocomplete dropdown (3-20)",
@@ -359,6 +371,9 @@ export class SettingsSelectorComponent extends Container {
 						break;
 					case "editor-padding":
 						callbacks.onEditorPaddingXChange(parseInt(newValue, 10));
+						break;
+					case "output-padding":
+						callbacks.onOutputPaddingXChange(parseInt(newValue, 10));
 						break;
 					case "autocomplete-max-visible":
 						callbacks.onAutocompleteMaxVisibleChange(parseInt(newValue, 10));

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added `setPaddingX()` method to `Box`, `Text`, and `Markdown` components for dynamic horizontal padding updates
+
 ## [0.50.3] - 2026-01-29
 
 ## [0.50.2] - 2026-01-29

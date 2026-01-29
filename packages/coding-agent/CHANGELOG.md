@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Added `outputPaddingX` setting to control horizontal padding for output content (0-3, default 1). Adjust via `/settings` or `settings.json`.
+
 ## [0.50.3] - 2026-01-29
 
 ### New Features

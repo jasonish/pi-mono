@@ -10,6 +10,7 @@ import {
 	type TruncationResult,
 	truncateTail,
 } from "../../../core/tools/truncate.js";
+import { getOutputPaddingX } from "../theme/layout.js";
 import { theme } from "../theme/theme.js";
 import { DynamicBorder } from "./dynamic-border.js";
 import { editorKey, keyHint } from "./keybinding-hints.js";
@@ -50,7 +51,7 @@ export class BashExecutionComponent extends Container {
 		this.addChild(this.contentContainer);
 
 		// Command header
-		const header = new Text(theme.fg(colorKey, theme.bold(`$ ${command}`)), 1, 0);
+		const header = new Text(theme.fg(colorKey, theme.bold(`$ ${command}`)), getOutputPaddingX(), 0);
 		this.contentContainer.addChild(header);
 
 		// Loader
@@ -137,7 +138,7 @@ export class BashExecutionComponent extends Container {
 		this.contentContainer.clear();
 
 		// Command header
-		const header = new Text(theme.fg("bashMode", theme.bold(`$ ${this.command}`)), 1, 0);
+		const header = new Text(theme.fg("bashMode", theme.bold(`$ ${this.command}`)), getOutputPaddingX(), 0);
 		this.contentContainer.addChild(header);
 
 		// Output
@@ -145,7 +146,7 @@ export class BashExecutionComponent extends Container {
 			if (this.expanded) {
 				// Show all lines
 				const displayText = availableLines.map((line) => theme.fg("muted", line)).join("\n");
-				this.contentContainer.addChild(new Text(`\n${displayText}`, 1, 0));
+				this.contentContainer.addChild(new Text(`\n${displayText}`, getOutputPaddingX(), 0));
 			} else {
 				// Use shared visual truncation utility
 				const styledOutput = previewLogicalLines.map((line) => theme.fg("muted", line)).join("\n");
@@ -153,7 +154,7 @@ export class BashExecutionComponent extends Container {
 					`\n${styledOutput}`,
 					PREVIEW_LINES,
 					this.ui.terminal.columns,
-					1, // padding
+					getOutputPaddingX(), // padding
 				);
 				this.contentContainer.addChild({ render: () => visualLines, invalidate: () => {} });
 			}
@@ -189,7 +190,7 @@ export class BashExecutionComponent extends Container {
 			}
 
 			if (statusParts.length > 0) {
-				this.contentContainer.addChild(new Text(`\n${statusParts.join("\n")}`, 1, 0));
+				this.contentContainer.addChild(new Text(`\n${statusParts.join("\n")}`, getOutputPaddingX(), 0));
 			}
 		}
 	}
