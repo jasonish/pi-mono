@@ -253,6 +253,11 @@ export async function runRpcMode(session: AgentSession): Promise<never> {
 			return { success: false, error: "Theme switching not supported in RPC mode" };
 		},
 
+		getOutputPaddingX() {
+			// No TUI in RPC mode; return default used by interactive mode.
+			return 1;
+		},
+
 		getToolsExpanded() {
 			// Tool expansion not supported in RPC mode - no TUI
 			return false;

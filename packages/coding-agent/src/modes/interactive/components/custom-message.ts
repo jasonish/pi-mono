@@ -59,7 +59,11 @@ export class CustomMessageComponent extends Container {
 		// Try custom renderer first - it handles its own styling
 		if (this.customRenderer) {
 			try {
-				const component = this.customRenderer(this.message, { expanded: this._expanded }, theme);
+				const component = this.customRenderer(
+					this.message,
+					{ expanded: this._expanded, outputPaddingX: getOutputPaddingX() },
+					theme,
+				);
 				if (component) {
 					// Custom renderer provides its own styled component
 					this.customComponent = component;

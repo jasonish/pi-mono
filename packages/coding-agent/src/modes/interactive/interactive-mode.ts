@@ -1396,6 +1396,7 @@ export class InteractiveMode {
 				}
 				return result;
 			},
+			getOutputPaddingX: () => getOutputPaddingX(),
 			getToolsExpanded: () => this.toolOutputExpanded,
 			setToolsExpanded: (expanded) => this.setToolsExpanded(expanded),
 		};

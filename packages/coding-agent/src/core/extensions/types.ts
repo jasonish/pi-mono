@@ -220,6 +220,9 @@ export interface ExtensionUIContext {
 	/** Set the current theme by name or Theme object. */
 	setTheme(theme: string | Theme): { success: boolean; error?: string };
 
+	/** Get the current horizontal padding used for output rendering. */
+	getOutputPaddingX(): number;
+
 	/** Get current tool output expansion state. */
 	getToolsExpanded(): boolean;
 
@@ -820,6 +823,8 @@ export interface SessionBeforeTreeResult {
 
 export interface MessageRenderOptions {
 	expanded: boolean;
+	/** Current output padding used by the host UI (0-3). */
+	outputPaddingX: number;
 }
 
 export type MessageRenderer<T = unknown> = (
